@@ -12,7 +12,7 @@ def step():
     game.draw()
     time.sleep(speed)
 
-agent = AgentFirst()
+agent = AgentFirst(game)
 
 while game.state == State.LIVE:
     moves = get_possible_moves(game)
