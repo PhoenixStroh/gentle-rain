@@ -17,6 +17,9 @@ class GameState:
     def __init__(self):
         self.draw_new_tiles()
 
+    def get_score(self) -> int:
+        return len(self.deck) + (8 - len(self.board.tokens_left))
+
     def draw_new_tiles(self):
         self.drawn_tiles = ()
         if len(self.deck) > 0:
@@ -35,7 +38,7 @@ class GameState:
         if len(self.drawn_tiles) > 0:
             drawn_tile = self.drawn_tiles[0]
 
-        content = "Deck: %s\nDrawn Tile: %s\n%s" % (len(self.deck), drawn_tile, self.state)
+        content = "Deck: %s\nDrawn Tile: %s\n%s\nScore: %s" % (len(self.deck), drawn_tile, self.state, self.get_score())
 
         setColor("black")
         setFont("Arial", 14)
