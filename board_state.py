@@ -55,17 +55,17 @@ class BoardState:
         return token in available_colors
 
     def attempt_add_token(self, corner_coord: tuple[int], token: int) -> bool:
-        fail_message = "FAILED TO ADD TOKEN"
+        fail_message = "FAILED TO ADD TOKEN: "
         if corner_coord not in self.pending_token_slots:
-            print(fail_message)
+            print(fail_message + "NOT PENDING")
             return False
         
         if token not in self.tokens_left:
-            print(fail_message)
+            print(fail_message + "NOT IN TOKENS LEFT")
             return False
 
         if not self.is_token_placement_legal(corner_coord, token):
-            print(fail_message)
+            print(fail_message + "NOT LEGAL PLACEMENT")
             return False
 
         self.pending_token_slots.remove(corner_coord)
@@ -74,6 +74,13 @@ class BoardState:
         
 
         return True
+
+    def attempt_remove_token(self, corner_coord: tuple[int], token: int) -> bool:
+        self.tokens_left.add(token)
+        self.pending_token_slots.add(corner_coord)
+
+        return True
+
 
     def is_tile_placement_legal(self, coord: tuple[int], tile: tuple[int]) -> bool:
         for i in range(4):
@@ -94,29 +101,43 @@ class BoardState:
             if neighbor_coord not in self.tiles.keys():
                 self.available_spaces.add(neighbor_coord)
 
+    def remove_neighboring_spaces(self, coord: tuple[int]):
+        for i in range(4):
+            neighbor_coord = add_vectors(coord, dir_to_vector(i))
+            if neighbor_coord not in self.tiles.keys():
+                if neighbor_coord in self.available_spaces:
+                    self.available_spaces.remove(neighbor_coord)
+
     def add_pending_token_slots(self, coord: tuple[int]):
         for offset in quad_coords:
             test_coord = add_vectors(add_vectors(coord, (-1, -1)), offset)
 
             if self.is_coord_quad(test_coord):
                 self.pending_token_slots.add(test_coord)
-            
+    
+    def remove_pending_token_slots(self, coord: tuple[int]):
+        for offset in quad_coords:
+            test_coord = add_vectors(add_vectors(coord, (-1, -1)), offset)
+
+            if self.is_coord_quad(test_coord):
+                if test_coord in self.pending_token_slots:
+                    self.pending_token_slots.remove(test_coord)
 
     def attempt_add_tile(self, coord: tuple[int], tile: tuple[int]) -> bool:
-        fail_message = "FAILED TO ADD TILE"
+        fail_message = "FAILED TO ADD TILE: "
         # check if available space
         if coord not in self.available_spaces:
-            print(fail_message)
+            print(fail_message + "NO AVAILABLE SPACE")
             return False
         
         # check if legal placement
         if not self.is_tile_placement_legal(coord, tile):
-            print(fail_message)
+            print(fail_message + "NOT LEGAL PLACEMENT")
             return False
 
         # check if tile is already occupied (SHOULDN'T EVER TRIGGER)
         if coord in self.tiles.keys():
-            print(fail_message)
+            print(fail_message + "TILE ALREADY OCCUPIED")
             print("WARNING: TILE ATTEMPTED PLACE ON ALREADY EXISTING TILE")
             return False
 
@@ -129,6 +150,22 @@ class BoardState:
         # attempt to add pending token slots if creating a quad
         self.add_pending_token_slots(coord)
 
+        return True
+
+    def attempt_remove_tile(self, coord: tuple[int]) -> bool:
+        fail_message = "FAILED TO REMOVE TILE: "
+
+        if coord not in self.tiles.keys():
+            print(fail_message + "TILE NOT FOUND AT POSITION")
+            return False
+        
+        self.remove_pending_token_slots(coord)
+        
+        self.tiles.pop(coord)
+        
+        self.remove_neighboring_spaces(coord)
+        self.available_spaces.add(coord)
+        
         return True
 
     def draw(self):
@@ -144,6 +181,9 @@ class BoardState:
 
         for coord in self.tiles.keys():
             draw_tile(coord, self.tiles[coord])
+        
+        for coord in self.available_spaces:
+            draw_available_space(coord)
         
         for token_slot in self.pending_token_slots:
             draw_token_slot(token_slot)

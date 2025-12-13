@@ -9,12 +9,12 @@ class State(Enum):
     LOST = 2
 
 class GameState:
-    deck: list[tuple[tuple[int]]] = init_deck()
+    deck: list[tuple[tuple[int]]]
     board: BoardState = BoardState()
-    drawn_tiles = ()
     state: State = State.LIVE
 
     def __init__(self):
+        self.deck = init_deck()
         self.draw_new_tiles()
 
     def get_score(self) -> int:
@@ -29,6 +29,14 @@ class GameState:
                 print("NO VALID MOVES, DISCARDING DRAWN TILES")
                 self.draw_new_tiles()
     
+    def rehold_tile(self, tile: tuple[int] = ()):
+        if self.drawn_tiles != ():
+            self.deck.append(self.drawn_tiles)
+        
+        self.drawn_tiles = ()
+        if tile != ():
+            self.drawn_tiles = get_tile_rotations(tile)
+
     def draw(self):
         clear()
         self.board.draw()
@@ -51,8 +59,11 @@ class Move:
     def attempt(self, game_state: GameState) -> bool:
         return False
     
+    def attempt_undo(self, game_state: GameState) -> bool:
+        return False
+
     def __str__(self):
-        return "Move()"
+        return "MoveEmpty"
 
 class MoveTile(Move):
     position: tuple[int]
@@ -75,9 +86,20 @@ class MoveTile(Move):
                 game_state.state = State.LOST
 
         return result
-    
+
+    def attempt_undo(self, game_state: GameState) -> bool:
+        result = game_state.board.attempt_remove_tile(self.position)
+
+        if result:
+            game_state.rehold_tile(self.tile)
+
+            if len(game_state.deck) != 0:
+                game_state.state = State.LIVE
+
+        return result
+
     def __str__(self):
-        return "MoveTile(%s, %s)" % (self.position, self.tile)
+        return "MoveTile: %s -> %s" % (self.tile, self.position)
 
 class MoveToken(Move):
     position: tuple[int]
@@ -90,20 +112,35 @@ class MoveToken(Move):
         self.token = token
 
     def attempt(self, game_state: GameState) -> bool:
+        # attempt to add token to specific quad
         result = game_state.board.attempt_add_token(self.position, self.token)
 
         if result:
+            # if no more tokens left, set game to win
             if len(game_state.board.tokens_left) == 0:
                 game_state.state = State.WON
                 return result
         
+        # if placing last pending token, draw new tiles
         if len(game_state.board.pending_token_slots) == 0:
             game_state.draw_new_tiles()
 
         return result
 
+    def attempt_undo(self, game_state: GameState) -> bool:
+        result = game_state.board.attempt_remove_token(self.position, self.token)
+
+        if result:
+            if len(game_state.board.pending_token_slots) == 1:
+                game_state.rehold_tile()
+
+            if len(game_state.board.tokens_left) != 0:
+                game_state.state = State.LIVE
+
+        return result
+
     def __str__(self):
-        return "MoveToken(%s, %s)" % (self.position, self.token)
+        return "MoveToken: %s -> %s" % (self.token, self.position)
 
 def has_any_move(game_state: GameState) -> bool:
     if len(game_state.board.pending_token_slots) > 0:
@@ -136,3 +173,63 @@ def get_possible_moves(game_state: GameState) -> list[Move]:
                 )
 
     return result
+
+class GameHistory:
+    game_state: GameState
+    move_history: list[Move] = []
+    header: int = -1 # index of last acted move
+
+    def __init__(self, game_state: GameState):
+        self.game_state = game_state
+
+    def get_move(self, index: int) -> Move:
+        if index < 0:
+            return None
+        if index >= len(self.move_history):
+            return None
+        return self.move_history[index]
+
+    def get_last_move(self) -> Move:
+        return self.get_move(self.header)
+
+    def get_next_move(self) -> Move:
+        return self.get_move(self.header + 1)
+
+    def add_move(self, move: Move):
+        if self.header >= 0:
+            self.move_history = self.move_history[:self.header + 1] # cutoff all history after header
+        
+        self.move_history.append(move)
+        self.header += 1
+
+    def attempt_undo(self) -> bool:
+        last_move = self.get_last_move()
+        if last_move == None:
+            return False
+
+        result = last_move.attempt_undo(self.game_state)
+
+        if result:
+            self.header -= 1
+
+        return result
+
+    def attempt_redo(self) -> bool:
+        next_move = self.get_next_move()
+        if next_move == None:
+            return False
+
+        result = next_move.attempt(self.game_state)
+
+        if result:
+            self.header += 1
+
+        return result
+
+    def __str__(self):
+        result = "GameHistory:\n"
+
+        for move in self.move_history:
+            result += " " + str(move) + "\n"
+
+        return result
