@@ -4,7 +4,7 @@ from game_state import *
 from agent import *
 import time
 
-random.seed(1)
+#random.seed(0)
 speed = 0.5
 
 stepthrough = False
@@ -38,21 +38,11 @@ game.draw()
 
 print(game_history)
 
-for i in range(30):
-    game_history.attempt_undo()
-    step()
-
-for i in range(30):
-    game_history.attempt_redo()
-    step()
-
 while True:
     input_result = input()
     if input_result == "undo":
         result = game_history.attempt_undo()
     if input_result == "redo":
         result = game_history.attempt_redo()
-    
-    print(result)
     
     game.draw()
