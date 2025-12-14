@@ -2,10 +2,16 @@ from data import *
 from graphics import *
 
 class BoardState:
-    tiles = {} #[coord: tile]
-    available_spaces = set([(0,0)]) #coord
-    pending_token_slots = set([]) #coord (offset half)
-    tokens_left = set([0, 1, 2, 3, 4, 5, 6, 7]) #0-7 color index
+    tiles : dict #[coord: tile]
+    available_spaces : set[tuple[int]] #coord
+    pending_token_slots : set[tuple[int]] #coord (offset half)
+    tokens_left : set[int] #0-7 color index
+
+    def __init__(self):
+        self.tiles = {}
+        self.available_spaces = set([(0,0)])
+        self.pending_token_slots = set([])
+        self.tokens_left = set([0, 1, 2, 3, 4, 5, 6, 7])
 
     def get_opposing_color(self, coord: tuple[int], dir: int) -> int:
         if coord in self.tiles.keys():

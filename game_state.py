@@ -10,10 +10,13 @@ class State(Enum):
 
 class GameState:
     deck: list[tuple[tuple[int]]]
-    board: BoardState = BoardState()
-    state: State = State.LIVE
+    board: BoardState
+    state: State
 
     def __init__(self):
+        self.board = BoardState()
+        self.state = State.LIVE
+
         self.deck = init_deck()
         self.draw_new_tiles()
 

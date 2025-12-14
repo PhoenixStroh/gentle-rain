@@ -3,6 +3,7 @@ from board_state import *
 from game_state import *
 from agent import *
 import time
+from test import *
 
 def test1():
     board = BoardState()
@@ -109,7 +110,18 @@ def test4():
         
         game.draw()    
 
+def test5():
+    test = Test(AgentFirst(), 100, 1, SaveConditionPointThreshold(5))
+    test.run()
+    print(test.score_results)
+    print(test.saved_games)
+    print(test.get_score_mean())
+
+    for game in test.saved_games:
+        game.draw()
+        input()
+
 def run():
-    test3()
+    test5()
 
 run()
