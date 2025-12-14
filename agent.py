@@ -12,3 +12,7 @@ class Agent:
 class AgentFirst(Agent):
     def choose_move(self, moves: list[Move]) -> Move:
         return moves[0]
+
+class AgentRandom(Agent):
+    def choose_move(self, moves: list[Move]) -> Move:
+        return moves[random.randint(0, len(moves) - 1)]
