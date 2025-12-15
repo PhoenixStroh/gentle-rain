@@ -1,6 +1,6 @@
 from data import *
 from board_state import *
-from graphics import *
+from app import *
 from enum import Enum
 
 class State(Enum):
@@ -40,9 +40,9 @@ class GameState:
         if tile != ():
             self.drawn_tiles = get_tile_rotations(tile)
 
-    def draw(self):
-        clear()
-        self.board.draw()
+    def draw(self, game_app: GameApp):
+        game_app.clear()
+        self.board.draw(game_app)
 
         drawn_tile = "None"
 
@@ -51,9 +51,7 @@ class GameState:
 
         content = "Deck: %s\nDrawn Tile: %s\n%s\nScore: %s" % (len(self.deck), drawn_tile, self.state, self.get_score())
 
-        setColor("black")
-        setFont("Arial", 14)
-        text(getWidth() - 50, getHeight() - 50, content, align="e", ang=0)
+        game_app.canvas.create_text(game_app.app.get_width() - 50, game_app.app.get_height() - 50, text=content, font=("Arial", 12), fill="black", anchor="e")
 
     def __str__(self):
         return "Game:\n %s\n\n Drawn Tiles: %s\n State: %s" % (self.board, self.drawn_tiles, self.state)

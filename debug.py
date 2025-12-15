@@ -178,15 +178,36 @@ def test6():
         
     #     print(result)
         
-    #     game.draw()    
+    #     game.draw()
 
 def test7():
-    while True:
-        clear()
-        circle(50, 50, 50)
-        if getKeys() != ():
-            print(getKeys())
-        sleep(1.0)
+    app = App()
+    game_app = GameApp(app)
+    
+    game_state = GameState()
+    agent = AgentFirst()
+
+    def game_loop():
+        def step():
+            game_state.draw(game_app)
+            time.sleep(0.1)
+
+        while game_state.state == State.LIVE:
+            moves = get_possible_moves(game_state)
+            if len(moves) == 0:
+                break
+
+            chosen_move = agent.choose_move(moves)
+            
+            if chosen_move != None:
+                chosen_move.attempt(game_state)
+
+            app.root.after(0, step())
+    
+    thread = threading.Thread(target=game_loop, daemon=True)
+    thread.start()
+
+    app.start()
 
 def run():
     test7()
