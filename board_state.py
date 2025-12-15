@@ -112,7 +112,14 @@ class BoardState:
             neighbor_coord = add_vectors(coord, dir_to_vector(i))
             if neighbor_coord not in self.tiles.keys():
                 if neighbor_coord in self.available_spaces:
-                    self.available_spaces.remove(neighbor_coord)
+                    has_neighbor = False
+                    for w in range(4):
+                        neighbor_neighbor_coord = add_vectors(neighbor_coord, dir_to_vector(w))
+                        if neighbor_neighbor_coord in self.tiles.keys():
+                            has_neighbor = True
+                            break
+                    if not has_neighbor:
+                        self.available_spaces.remove(neighbor_coord)
 
     def add_pending_token_slots(self, coord: tuple[int]):
         for offset in quad_coords:

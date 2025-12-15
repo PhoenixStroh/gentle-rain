@@ -4,6 +4,7 @@ from game_state import *
 from agent import *
 import time
 from test import *
+import asyncio
 
 def test1():
     board = BoardState()
@@ -121,7 +122,73 @@ def test5():
         game.draw()
         input()
 
+def test6():
+    random.seed(1)
+    speed = 1.0
+
+    stepthrough = False
+
+    game = GameState()
+    game_history = GameHistory(game)
+
+    def step():
+        game.draw()
+        time.sleep(speed)
+
+    agent = AgentFirst(game)
+
+    while game.state == State.LIVE:
+        moves = get_possible_moves(game)
+
+        if len(moves) == 0:
+            break
+
+        for move in moves:
+            result = move.attempt(game)
+
+            step()
+
+            if result:
+                result_undo = move.attempt_undo(game)
+
+                if not result_undo:
+                    print("WARNING: AGENT FERN MOVED BUT DID NOT UNDO")
+
+        chosen_move = agent.choose_move(moves)
+        
+        if chosen_move != None:
+            result = chosen_move.attempt(game)
+
+            if result:
+                game_history.add_move(chosen_move)
+
+        if stepthrough:
+            step()
+
+    game.draw()
+
+    print(game_history)
+
+    # while True:
+    #     input_result = input()
+    #     if input_result == "undo":
+    #         result = game_history.attempt_undo()
+    #     if input_result == "redo":
+    #         result = game_history.attempt_redo()
+        
+    #     print(result)
+        
+    #     game.draw()    
+
+def test7():
+    while True:
+        clear()
+        circle(50, 50, 50)
+        if getKeys() != ():
+            print(getKeys())
+        sleep(1.0)
+
 def run():
-    test5()
+    test7()
 
 run()
