@@ -3,7 +3,7 @@ from board_state import *
 from game_state import *
 from agent import *
 import time
-from test import *
+from playset import *
 import asyncio
 
 def test1():
@@ -112,7 +112,7 @@ def test4():
         game.draw()    
 
 def test5():
-    test = Test(AgentFirst(), 100, 1, SaveConditionPointThreshold(5))
+    test = Playset(AgentFirst(), 100, 1, SaveConditionPointThreshold(5))
     test.run()
     print(test.score_results)
     print(test.saved_games)

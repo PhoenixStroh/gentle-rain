@@ -17,7 +17,7 @@ class SaveConditionPointThreshold:
             return True
         return False
 
-class Test:
+class Playset:
     agent: Agent
     rounds: int
     seed: int
