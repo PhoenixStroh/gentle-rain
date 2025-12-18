@@ -26,6 +26,7 @@ class Test:
     
     score_results: list[int]
     saved_games: list[GameState]
+    saved_histories: list[GameHistory]
 
     def __init__(self, agent: Agent, rounds: int = 1, seed: int = None, save_condition: SaveCondition = None):
         self.agent = agent
@@ -45,6 +46,7 @@ class Test:
     def reset(self):
         self.score_results = []
         self.saved_games = []
+        self.saved_histories = []
 
     def run(self):
         self.reset()
@@ -56,6 +58,7 @@ class Test:
 
         for i in range(self.rounds):
             game = GameState()
+            history = GameHistory(game)
 
             self.agent.game = game
 
@@ -71,9 +74,13 @@ class Test:
                     break
                 
                 result = chosen_move.attempt(game)
+
+                if result:
+                    history.add_move(chosen_move)
             
             self.score_results.append(game.get_score())
 
             if self.save_condition != None:
                 if self.save_condition.is_saving(game):
                     self.saved_games.append(game)
+                    self.saved_histories.append(history)
