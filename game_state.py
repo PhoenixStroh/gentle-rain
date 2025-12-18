@@ -177,11 +177,20 @@ def get_possible_moves(game_state: GameState) -> list[Move]:
 
 class GameHistory:
     game_state: GameState
-    move_history: list[Move] = []
+    move_history: list[Move]
+    state_history: list[GameState]
     header: int = -1 # index of last acted move
 
-    def __init__(self, game_state: GameState):
+    is_record_moves: bool
+    is_record_states: bool
+
+    def __init__(self, game_state: GameState, is_record_moves: bool = True, is_record_states: bool = False):
         self.game_state = game_state
+        self.is_record_moves = is_record_moves
+        self.is_record_states = is_record_states
+        
+        self.move_history = []
+        self.state_history = []
 
     def get_move(self, index: int) -> Move:
         if index < 0:
@@ -196,11 +205,12 @@ class GameHistory:
     def get_next_move(self) -> Move:
         return self.get_move(self.header + 1)
 
-    def add_move(self, move: Move):
+    def add_move(self, move: Move, state: GameState):
         if self.header >= 0:
             self.move_history = self.move_history[:self.header + 1] # cutoff all history after header
         
         self.move_history.append(move)
+        self.state_history.append(state)
         self.header += 1
 
     def attempt_undo(self) -> bool:

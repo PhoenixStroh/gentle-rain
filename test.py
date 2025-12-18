@@ -25,10 +25,9 @@ class Test:
     save_condition: SaveCondition
     
     score_results: list[int]
-    saved_games: list[GameState]
-    saved_histories: list[GameHistory]
+    saved_history: list[GameHistory]
 
-    def __init__(self, agent: Agent, rounds: int = 1, seed: int = None, save_condition: SaveCondition = None):
+    def __init__(self, agent: Agent, rounds: int = 1, seed: int = None, is_saving_states = False, save_condition: SaveCondition = None):
         self.agent = agent
         self.rounds = rounds
         self.seed = seed
@@ -36,7 +35,7 @@ class Test:
         self.save_condition = save_condition
 
         self.score_results = []
-        self.saved_games = []
+        self.saved_histories = []
     
     def get_score_mean(self) -> float:
         if len(self.score_results) == 0:
@@ -45,7 +44,6 @@ class Test:
 
     def reset(self):
         self.score_results = []
-        self.saved_games = []
         self.saved_histories = []
 
     def run(self):
@@ -58,7 +56,7 @@ class Test:
 
         for i in range(self.rounds):
             game = GameState()
-            history = GameHistory(game)
+            history = GameHistory(game, True, self.is_saving_states)
 
             self.agent.game = game
 
@@ -82,5 +80,4 @@ class Test:
 
             if self.save_condition != None:
                 if self.save_condition.is_saving(game):
-                    self.saved_games.append(game)
                     self.saved_histories.append(history)
