@@ -69,7 +69,7 @@ class MoveTile(Move):
             game_state.draw_new_tiles()
 
         if result:
-            if len(game_state.deck) == 0:
+            if len(game_state.deck) == 0 and game_state.drawn_tiles == ():
                 game_state.state = State.LOST
 
         return result
