@@ -153,7 +153,10 @@ def get_possible_moves(game_state: GameState) -> list[Move]:
                 result.append(
                     MoveToken(color, slot)
                 )
-        return result
+        if len(result) != 0:
+            return result
+        else:
+            game_state.board.pending_token_slots.clear()
 
     for drawn_tile in game_state.drawn_tiles:
         for space in game_state.board.available_spaces:
