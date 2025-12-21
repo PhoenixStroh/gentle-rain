@@ -82,8 +82,6 @@ class MoveTile(Move):
         if result:
             if not is_quad:
                 game_state.rehold_tile(self.tile)
-            else:
-                print("QUAD! QUAD!")
 
             if len(game_state.deck) != 0:
                 game_state.state = State.LIVE
