@@ -1,5 +1,4 @@
 from data import *
-from app import *
 
 class BoardState:
     tiles : dict #[coord: tile]
@@ -180,25 +179,6 @@ class BoardState:
         self.available_spaces.add(coord)
         
         return True
-
-    def draw(self, game_app: GameApp):
-        game_app.clear()
-
-        space = 10
-        margin = 10
-        size = 20
-        for i in range(len(self.tokens_left)):
-            token = list(self.tokens_left)[i]
-            game_app.draw_center_circle((margin + size * 0.5 + (space + size) * i, margin + size * 0.5), size, {"outline":"black", "fill":get_color_name(token)})
-
-        for coord in self.tiles.keys():
-            game_app.draw_tile(coord, self.tiles[coord])
-        
-        for coord in self.available_spaces:
-            game_app.draw_available_space(coord)
-        
-        for token_slot in self.pending_token_slots:
-            game_app.draw_token_slot(token_slot)
 
     def __str__(self):
         return "Board:\n Tiles:%s\n Spaces:%s\n Token Slots:%s\n Tokens Left:%s" % (self.tiles, self.available_spaces, self.pending_token_slots, self.tokens_left)

@@ -1,6 +1,5 @@
 from data import *
-from board_state import *
-from app import *
+from board_state import BoardState
 from enum import Enum
 
 class State(Enum):
@@ -39,19 +38,6 @@ class GameState:
         self.drawn_tiles = ()
         if tile != ():
             self.drawn_tiles = get_tile_rotations(tile)
-
-    def draw(self, game_app: GameApp):
-        game_app.clear()
-        self.board.draw(game_app)
-
-        drawn_tile = "None"
-
-        if len(self.drawn_tiles) > 0:
-            drawn_tile = self.drawn_tiles[0]
-
-        content = "Deck: %s\nDrawn Tile: %s\n%s\nScore: %s" % (len(self.deck), drawn_tile, self.state, self.get_score())
-
-        game_app.canvas.create_text(game_app.app.get_width() - 50, game_app.app.get_height() - 50, text=content, font=("Arial", 12), fill="black", anchor="e")
 
     def __str__(self):
         return "Game:\n %s\n\n Drawn Tiles: %s\n State: %s" % (self.board, self.drawn_tiles, self.state)
@@ -205,12 +191,14 @@ class GameHistory:
     def get_next_move(self) -> Move:
         return self.get_move(self.header + 1)
 
-    def add_move(self, move: Move, state: GameState):
+    def add_move(self, move: Move = None, state: GameState = None):
         if self.header >= 0:
             self.move_history = self.move_history[:self.header + 1] # cutoff all history after header
         
-        self.move_history.append(move)
-        self.state_history.append(state)
+        if move != None and self.is_record_moves:
+            self.move_history.append(move)
+        if state != None and self.is_record_states:
+            self.state_history.append(state)
         self.header += 1
 
     def attempt_undo(self) -> bool:
