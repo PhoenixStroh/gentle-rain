@@ -2,6 +2,7 @@ from data import *
 import tkinter as tk
 from board_state import *
 from game_state import *
+from game_history import *
 import threading
 import time
 

@@ -1,4 +1,5 @@
 from game_state import *
+from moves import *
 
 class Agent:
     game: GameState
