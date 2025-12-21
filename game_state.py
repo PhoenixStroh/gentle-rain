@@ -146,6 +146,9 @@ def has_any_move(game_state: GameState) -> bool:
 def get_possible_moves(game_state: GameState) -> list[Move]:
     result = []
 
+    if game_state.state != State.LIVE:
+        return result
+
     if len(game_state.board.pending_token_slots) > 0:
         for slot in game_state.board.pending_token_slots:
             colors = game_state.board.get_valid_colors_in_quad(slot)

@@ -80,4 +80,4 @@ class Playset:
 
             if self.save_condition != None:
                 if self.save_condition.is_saving(game):
-                    self.saved_histories.append(history)
+                    self.saved_history.append(history)

@@ -121,20 +121,24 @@ class App:
         self.game.draw(self.visuals)
 
     def key_handler(self, event):
-        if event.keysym in ("esc"):
-            self.end()
+        pass
+        # if event.keysym in ("esc"):
+        #     self.end()
 
-        if event.keysym in ("a", "left"):
-            self.undo()
+        # if event.keysym in ("a", "left"):
+        #     self.undo()
             
-        if event.keysym in ("d", "right"):
-            self.redo()
+        # if event.keysym in ("d", "right"):
+        #     self.redo()
 
     def start(self, start_fn: callable = None):
-        self.root.bind("<Key>", self.key_handler)
+        # self.root.bind("<Key>", self.key_handler)
         if start_fn != None:
             self.root.after(1, start_fn)
         self.root.mainloop()
     
     def end(self):
         self.root.quit()
+    
+    def draw(self):
+        self.visuals.draw_game_state(self.game)
