@@ -455,7 +455,15 @@ def test10():
 
     app.start(start)
 
+def test11():
+    playset = Playset(AgentFirst(), 100, 0)
+
+    playset.run()
+    print(playset.score_results)
+    print(playset.saved_history)
+    print(playset.get_score_mean())
+
 def run():
-    test10()
+    test11()
 
 run()

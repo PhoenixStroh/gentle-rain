@@ -27,7 +27,7 @@ class Playset:
     score_results: list[int]
     saved_history: list[GameHistory]
 
-    def __init__(self, agent: Agent, rounds: int = 1, seed: int = None, is_saving_states = False, save_condition: SaveCondition = None):
+    def __init__(self, agent: Agent, rounds: int = 1, seed: int = None, save_condition: SaveCondition = None):
         self.agent = agent
         self.rounds = rounds
         self.seed = seed
@@ -35,7 +35,7 @@ class Playset:
         self.save_condition = save_condition
 
         self.score_results = []
-        self.saved_histories = []
+        self.saved_history = []
     
     def get_score_mean(self) -> float:
         if len(self.score_results) == 0:
@@ -56,7 +56,7 @@ class Playset:
 
         for i in range(self.rounds):
             game = GameState()
-            history = GameHistory(game, True, self.is_saving_states)
+            history = GameHistory(game, True, False)
 
             self.agent.game = game
 
