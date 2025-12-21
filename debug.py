@@ -410,7 +410,7 @@ def test10():
         nonlocal game, history
 
         if index >= len(possible_moves):
-            app.root.after(1000, return_call)
+            app.root.after(100, return_call)
             return
 
         possible_moves[index].attempt(game)
@@ -422,7 +422,7 @@ def test10():
 
             undo_redo_process(return_call, possible_moves, index + 1)
 
-        app.root.after(1000, undo)
+        app.root.after(100, undo)
 
     def process_start():
         nonlocal game, history
@@ -447,7 +447,7 @@ def test10():
                 history.add_move(chosen_move)
 
         app.visuals.draw_game_state(game)
-        app.root.after(1000, process_start)
+        app.root.after(100, process_start)
 
     def start():
         app.visuals.draw_game_state(game)

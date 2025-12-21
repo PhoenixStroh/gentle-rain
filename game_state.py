@@ -75,10 +75,15 @@ class MoveTile(Move):
         return result
 
     def attempt_undo(self, game_state: GameState) -> bool:
+        is_quad = game_state.board.is_coord_any_quad(self.position)
+
         result = game_state.board.attempt_remove_tile(self.position)
 
         if result:
-            game_state.rehold_tile(self.tile)
+            if not is_quad:
+                game_state.rehold_tile(self.tile)
+            else:
+                print("QUAD! QUAD!")
 
             if len(game_state.deck) != 0:
                 game_state.state = State.LIVE

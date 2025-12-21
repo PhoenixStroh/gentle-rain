@@ -51,6 +51,14 @@ class BoardState:
                 return False
         return True
 
+    def is_coord_any_quad(self, coord: tuple[int]) -> bool:
+        for offset in quad_coords:
+            test_coord = add_vectors(add_vectors(coord, (-1, -1)), offset)
+
+            if self.is_coord_quad(test_coord):
+                return True
+        return False
+
     def is_token_placement_legal(self, corner_coord: tuple[int], token: int) -> bool:
         if not self.is_coord_quad(corner_coord):
             return False
