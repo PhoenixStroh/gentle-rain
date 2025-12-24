@@ -139,7 +139,7 @@ class App:
             self.redo()
 
     def key_handler(self, event):
-        if event.keysym == "Escape":
+        if event.keysym in ("q", "Escape"):
             self.end()
             return
         

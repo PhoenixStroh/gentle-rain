@@ -3,7 +3,7 @@ from app import *
 
 game = GameState()
 agent = AgentFirst(game)
-playset = Playset(agent, 100, 0, SaveConditionPointThreshold(4))
+playset = Playset(agent, 500, 0, SaveConditionPointThreshold(4))
 playset.run()
 print(playset)
 
