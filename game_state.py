@@ -13,6 +13,7 @@ class GameState:
     state: State
     
     drawn_tiles: tuple
+    discarded_tiles: list[tuple[tuple[int]]]
 
     def __init__(self):
         self.board = BoardState()
@@ -20,6 +21,7 @@ class GameState:
 
         self.deck = init_deck()
         self.draw_new_tiles()
+        self.discarded_tiles = []
 
     def get_score(self) -> int:
         return len(self.deck) + (8 - len(self.board.tokens_left))
@@ -36,6 +38,16 @@ class GameState:
         self.drawn_tiles = ()
         if tile != ():
             self.drawn_tiles = get_tile_rotations(tile)
+
+    def discard_tile(self):
+        if self.drawn_tiles != ():
+            self.discarded_tiles.append(self.drawn_tiles)
+            
+        self.drawn_tiles = ()
+    
+    def undiscard_tile(self):
+        if len(self.discarded_tiles) > 0:
+            self.drawn_tiles = self.discarded_tiles.pop()
 
     def __str__(self):
         return "Game:\n %s\n\n Drawn Tiles: %s\n State: %s\n Drawn Tiles: %s\n Deck: %s" % (self.board, self.drawn_tiles, self.state, self.drawn_tiles, self.deck)

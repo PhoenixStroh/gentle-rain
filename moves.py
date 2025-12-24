@@ -89,6 +89,16 @@ class MoveToken(Move):
     def __str__(self):
         return "MoveToken: %s -> %s" % (self.token, self.position)
 
+class MoveDiscard(Move):
+    def __init__(self):
+        super().__init__()
+
+    def attempt(self, game_state: GameState):
+        game_state.discard_tile()
+
+    def attempt_undo(self, game_state: GameState):
+        game_state.undiscard_tile()
+
 def has_any_move(game_state: GameState) -> bool:
     if len(game_state.board.pending_token_slots) > 0:
         return True
@@ -115,8 +125,6 @@ def get_possible_moves(game_state: GameState) -> list[Move]:
                 )
         if len(result) != 0:
             return result
-        else:
-            game_state.board.pending_token_slots.clear()
 
     for drawn_tile in game_state.drawn_tiles:
         for space in game_state.board.available_spaces:
@@ -124,6 +132,9 @@ def get_possible_moves(game_state: GameState) -> list[Move]:
                 result.append(
                     MoveTile(drawn_tile, space)
                 )
+
+    if len(result) == 0:
+        result.append(MoveDiscard())
 
     return result
 
