@@ -104,6 +104,8 @@ class App:
     game: GameState
     history: GameHistory
 
+    input_callbacks: list[callable]
+
     def __init__(self, game: GameState):
         self.root = tk.Tk()
         self.root.title("Gentle Rain")
@@ -115,22 +117,22 @@ class App:
 
     def undo(self):
         self.history.attempt_undo()
-        self.game.draw(self.visuals)
+        self.draw()
 
     def redo(self):
         self.history.attempt_redo()
-        self.game.draw(self.visuals)
+        self.draw()
+
+    def input_undo_redo(self, event):
+        if event.keysym in ("a", "left"):
+            self.undo()
+            
+        if event.keysym in ("d", "right"):
+            self.redo()
 
     def key_handler(self, event):
-        pass
-        # if event.keysym in ("esc"):
-        #     self.end()
-
-        # if event.keysym in ("a", "left"):
-        #     self.undo()
-            
-        # if event.keysym in ("d", "right"):
-        #     self.redo()
+        if event.keysym in ("esc"):
+            self.end()
 
     def start(self, start_fn: callable = None):
         # self.root.bind("<Key>", self.key_handler)
