@@ -106,12 +106,15 @@ class App:
 
     input_callbacks: list[callable]
 
-    def __init__(self, game: GameState):
+    def __init__(self, game: GameState, history: GameHistory = None):
         self.root = tk.Tk()
         self.root.title("Gentle Rain")
         
         self.game = game
-        self.history = GameHistory(game)
+        if history == None:
+            self.history = GameHistory(game)
+        else:
+            self.history = history
 
         self.input_callbacks = []
 
@@ -129,15 +132,16 @@ class App:
         self.input_callbacks.append(callback)
 
     def callback_undo_redo(self, event):
-        if event.keysym in ("a", "left"):
+        if event.keysym in ("a", "Left"):
             self.undo()
             
-        if event.keysym in ("d", "right"):
+        if event.keysym in ("d", "Right"):
             self.redo()
 
     def key_handler(self, event):
-        if event.keysym in ("esc"):
+        if event.keysym == "Escape":
             self.end()
+            return
         
         for callback in self.input_callbacks:
             callback(event)
@@ -151,8 +155,7 @@ class App:
         self.root.mainloop()
     
     def end(self):
-        self.root.quit()
-        print("HERE?")
+        self.root.destroy()
     
     def draw(self):
         self.visuals.draw_game_state(self.game)

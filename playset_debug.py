@@ -8,4 +8,6 @@ playset.run()
 print(playset)
 
 for history in playset.saved_history:
-    App(history.game_state).start()
+    app = App(history.game_state, history)
+    app.add_input_callback(app.callback_undo_redo)
+    app.start()

@@ -96,7 +96,6 @@ class MoveDiscard(Move):
     def attempt(self, game_state: GameState):
         game_state.discard_tile()
         game_state.draw_new_tiles()
-        print("DISCARDING!!")
 
     def attempt_undo(self, game_state: GameState):
         game_state.undiscard_tile()

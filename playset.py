@@ -82,6 +82,7 @@ class Playset:
             if self.save_condition != None:
                 if self.save_condition.is_saving(game):
                     self.saved_history.append(history)
+                    print(history.move_history)
     
     def __str__(self):
         return "Playset:\n Agent: %s\n Rounds: %s\n Seed: %s\n Save Condition: %s\n Score Mean: %s\n Score Results: %s\n" % (type(self.agent).__name__, self.rounds, self.seed, self.save_condition, self.get_score_mean(), self.score_results)
