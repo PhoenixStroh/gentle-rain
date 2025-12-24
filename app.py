@@ -136,6 +136,7 @@ class App:
         # self.root.bind("<Key>", self.key_handler)
         if start_fn != None:
             self.root.after(1, start_fn)
+        self.root.after(2, self.draw)
         self.root.mainloop()
     
     def end(self):

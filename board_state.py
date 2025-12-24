@@ -133,7 +133,8 @@ class BoardState:
             test_coord = add_vectors(add_vectors(coord, (-1, -1)), offset)
 
             if self.is_coord_quad(test_coord):
-                self.pending_token_slots.add(test_coord)
+                if len(self.get_valid_colors_in_quad(test_coord)) > 0:
+                    self.pending_token_slots.add(test_coord)
     
     def remove_pending_token_slots(self, coord: tuple[int]):
         for offset in quad_coords:
@@ -190,3 +191,17 @@ class BoardState:
 
     def __str__(self):
         return "Board:\n Tiles:%s\n Spaces:%s\n Token Slots:%s\n Tokens Left:%s" % (self.tiles, self.available_spaces, self.pending_token_slots, self.tokens_left)
+    
+def board_state_compare(a: BoardState, b: BoardState) -> dict:
+    comparison = {}
+
+    if not a.tiles == b.tiles:
+        comparison["tiles_same"] = a.tiles == b.tiles
+    if len(a.available_spaces ^ b.available_spaces) != 0:
+        comparison["available_spaces"] = a.available_spaces ^ b.available_spaces
+    if len(a.pending_token_slots ^ b.pending_token_slots) != 0:
+        comparison["pending_token_slots"] = a.pending_token_slots ^ b.pending_token_slots
+    if len(a.tokens_left ^ b.tokens_left) != 0:
+        comparison["tokens_left"] = a.tokens_left ^ b.tokens_left
+
+    return comparison

@@ -23,23 +23,22 @@ class MoveTile(Move):
     def attempt(self, game_state: GameState) -> bool:
         result = game_state.board.attempt_add_tile(self.position, self.tile)
 
-        if len(game_state.board.pending_token_slots) == 0:
-            game_state.draw_new_tiles()
-
         if result:
+            game_state.drawn_tiles = ()
+
+            if len(game_state.board.pending_token_slots) == 0:
+                game_state.draw_new_tiles()
+        
             if len(game_state.deck) == 0 and game_state.drawn_tiles == ():
                 game_state.state = State.LOST
 
         return result
 
     def attempt_undo(self, game_state: GameState) -> bool:
-        is_quad = game_state.board.is_coord_any_quad(self.position)
-
         result = game_state.board.attempt_remove_tile(self.position)
 
         if result:
-            if not is_quad:
-                game_state.rehold_tile(self.tile)
+            game_state.rehold_tile(self.tile)
 
             if len(game_state.deck) != 0:
                 game_state.state = State.LIVE
@@ -127,3 +126,9 @@ def get_possible_moves(game_state: GameState) -> list[Move]:
                 )
 
     return result
+
+def get_random_move(game_state: GameState) -> Move:
+    moves = get_possible_moves(game_state)
+    if len(moves) > 0:
+        return random.choice(moves)
+    return None
