@@ -113,6 +113,8 @@ class App:
         self.game = game
         self.history = GameHistory(game)
 
+        self.input_callbacks = []
+
         self.visuals = Visuals(self.root)
 
     def undo(self):
@@ -150,6 +152,7 @@ class App:
     
     def end(self):
         self.root.quit()
+        print("HERE?")
     
     def draw(self):
         self.visuals.draw_game_state(self.game)

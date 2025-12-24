@@ -464,6 +464,6 @@ def test11():
     print(playset.get_score_mean())
 
 def run():
-    test11()
+    test9()
 
 run()
