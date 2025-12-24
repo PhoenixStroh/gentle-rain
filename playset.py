@@ -50,18 +50,22 @@ class Playset:
             while game.state == State.LIVE:
                 moves = get_possible_moves(game)
                 if len(moves) == 0:
+                    print("WARNING: NO MOVES FOUND. ENDING GAME EARLY.")
                     break
 
                 chosen_move = self.agent.choose_move(moves)
                 
                 if chosen_move == None:
-                    print("WARNING: AGENT CHOSEN MOVE IS INVALID. ENDING GAME EARLY")
+                    print("WARNING: AGENT CHOSEN MOVE IS EMPTY. ENDING GAME EARLY")
                     break
                 
                 result = chosen_move.attempt(game)
 
                 if result:
                     history.add_move(chosen_move)
+                else:
+                    print("WARNING: AGENT CHOSEN MOVE FAILED. ENDING GAME EARLY")
+                    break
             
             self.score_results.append(game.get_score())
 

@@ -40,7 +40,7 @@ class MoveTile(Move):
         if result:
             game_state.rehold_tile(self.tile)
 
-            if len(game_state.deck) != 0:
+            if len(game_state.deck) != 0 or game_state.drawn_tiles != ():
                 game_state.state = State.LIVE
 
         return result
@@ -93,12 +93,22 @@ class MoveDiscard(Move):
     def __init__(self):
         super().__init__()
 
-    def attempt(self, game_state: GameState):
+    def attempt(self, game_state: GameState) -> bool:
         game_state.discard_tile()
         game_state.draw_new_tiles()
 
-    def attempt_undo(self, game_state: GameState):
+        if len(game_state.deck) == 0 and game_state.drawn_tiles == ():
+            game_state.state = State.LOST
+        
+        return True
+
+    def attempt_undo(self, game_state: GameState) -> bool:
         game_state.undiscard_tile()
+
+        if len(game_state.deck) != 0 or game_state.drawn_tiles != ():
+            game_state.state = State.LIVE
+
+        return True
 
 def has_any_move(game_state: GameState) -> bool:
     if len(game_state.board.pending_token_slots) > 0:
