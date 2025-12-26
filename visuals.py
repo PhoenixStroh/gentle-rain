@@ -82,6 +82,10 @@ class Visuals:
 
     def draw_game_state(self, game_state: GameState):
         self.clear()
+
+        if game_state == None:
+            return
+
         self.draw_board_state(game_state.board)
 
         drawn_tile = "None"

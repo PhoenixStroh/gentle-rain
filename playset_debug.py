@@ -7,7 +7,6 @@ playset = Playset(agent, 500, 0, SaveConditionPointThreshold(4))
 playset.run()
 print(playset)
 
-for history in playset.saved_history:
-    app = App(history.game_state, history)
-    app.add_input_callback(app.callback_undo_redo)
-    app.start()
+app = AppPlayset(playset.saved_history)
+app.add_input_callback(app.callback_undo_redo)
+app.start()

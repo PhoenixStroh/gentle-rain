@@ -16,13 +16,14 @@ class App:
 
     input_callbacks: list[callable]
 
-    def __init__(self, game: GameState, history: GameHistory = None):
+    def __init__(self, game: GameState = None, history: GameHistory = None):
         self.root = tk.Tk()
         self.root.title("Gentle Rain")
         
         self.game = game
         if history == None:
-            self.history = GameHistory(game)
+            if game != None:
+                self.history = GameHistory(game)
         else:
             self.history = history
 
@@ -31,12 +32,14 @@ class App:
         self.visuals = Visuals(self.root)
 
     def undo(self):
-        self.history.attempt_undo()
-        self.draw()
+        if self.history != None:
+            self.history.attempt_undo()
+            self.draw()
 
     def redo(self):
-        self.history.attempt_redo()
-        self.draw()
+        if self.history != None:
+            self.history.attempt_redo()
+            self.draw()
 
     def add_input_callback(self, callback: callable):
         self.input_callbacks.append(callback)
@@ -69,3 +72,41 @@ class App:
     
     def draw(self):
         self.visuals.draw_game_state(self.game)
+
+class AppPlayset(App):
+    history_set: list[GameHistory]
+    history_set_index: int
+
+    def __init__(self, history_set: list[GameHistory]):
+        self.history_set = history_set
+
+        self.history_set_index = 0
+
+        game: GameState = None
+        history: GameHistory = None
+
+        if len(history_set) > 0:
+            game = history_set[0].game_state
+            history = history_set[0]
+
+        super().__init__(game, history)
+
+        self.add_input_callback(self.callback_next_back_set)
+    
+    def update_history_set_index(self, value):
+        if len(self.history_set) == 0:
+            return
+        
+        self.history_set_index = max(0, min(len(self.history_set) - 1, self.history_set_index + value))
+
+        self.history = self.history_set[self.history_set_index]
+        self.game = self.history.game_state
+
+        self.draw()
+
+    def callback_next_back_set(self, event):
+        if event.keysym == "comma":
+            self.update_history_set_index(-1)
+            
+        if event.keysym == "period":
+            self.update_history_set_index(1)
